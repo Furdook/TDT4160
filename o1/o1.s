@@ -22,9 +22,9 @@ Start:
 	mov r4, #1 << BUTTON_PIN  // BUTTON_PIN = 9, so we get 0b100000000
 
 Loop:
-	ldr r5, [r3]    // load data input value on r6
-    and r5, r4, r5  // and to get intended data input
-    cmp r5, r4		// compare to determain whether pushed or not
+	ldr r5, [r3]    // load data input value on r5 from r3
+    and r5, r4, r5  // we want to know what the input r4 is when btn0 is pressed, r4 and r5 is this value
+    cmp r5, r4		// compare to determain whether pushed or not, if pushed r4 will be the value of r5
     beq On          // jump to On if cmp true
 
     str r0, [r2]    // str set on LED, turns off
