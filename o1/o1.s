@@ -18,8 +18,9 @@ Start:
     add r2, r0, r2 	// Set
     add r3, r4, r3  // Data input
 
-	mov r0, #1 << LED_PIN     // LED_PIN = 2,    so we get 0b100
-	mov r4, #1 << BUTTON_PIN  // BUTTON_PIN = 9, so we get 0b100000000
+    // As we want the pins below we shift a 1 to the index of LED_PIN and BUTTON_PIN (Think of the microcontroller)
+	mov r0, #1 << LED_PIN     // LED_PIN = 2,    so we get 0100
+	mov r4, #1 << BUTTON_PIN  // BUTTON_PIN = 9, so we get 0001 0000 0000
 
 Loop:
 	ldr r5, [r3]    // load data input value on r5 from r3
