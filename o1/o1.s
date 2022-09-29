@@ -15,7 +15,7 @@ Start:
     ldr r3, =GPIO_PORT_DIN      // 38
 
     add r1, r0, r1  // Clear
-    add r2, r0, r2 	// Set
+    add r2, r0, r2  // Set
     add r3, r4, r3  // Data input
 
     // As we want the pins below we shift a 1 to the index of LED_PIN and BUTTON_PIN (Think of the microcontroller)
