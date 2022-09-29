@@ -8,7 +8,7 @@
 	
 Start:
     ldr r0, =GPIO_BASE + (PORT_SIZE * LED_PORT)  // 0x40006000 + ( 36 * 4 )
-    ldr r4, =GPIO_BASE + PORT_SIZE               // 0x40006000 + 36
+    ldr r4, =GPIO_BASE + PORT_SIZE               // 0x40006000 + 36 (BUTTON_PORT = 1)
 
     ldr r1, =GPIO_PORT_DOUTCLR  // 20
     ldr r2, =GPIO_PORT_DOUTSET  // 16
@@ -19,7 +19,8 @@ Start:
     add r3, r4, r3  // Data input
 
     // As we want the pins below we shift a 1 to the index of LED_PIN and BUTTON_PIN (Think of the microcontroller)
-	mov r0, #1 << LED_PIN     // LED_PIN = 2,    so we get 0100
+	// lsl can also be used to acheive this, alternatively write out the address manually, ie: mov r0, 0b100
+    mov r0, #1 << LED_PIN     // LED_PIN = 2,    so we get 0100
 	mov r4, #1 << BUTTON_PIN  // BUTTON_PIN = 9, so we get 0001 0000 0000
 
 Loop:
@@ -29,7 +30,7 @@ Loop:
     beq On          // jump to On if cmp true
 
     str r0, [r2]    // str set on LED, turns off
-    B Loop          // restarts loops
+    B Loop          // restarts loops (Branch to Loop)
 
 On:
     str r0, [r1]    // str clear on LED, turns on
