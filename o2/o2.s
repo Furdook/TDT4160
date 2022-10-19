@@ -58,7 +58,7 @@ GPIO_ODD_IRQHandler:
 SysTick_Handler:
 
 	ldr r0, =tenths  					  // load golbal tenths variable
-	ldr r1, [r0]     					  // Store r1's value in r0's address, aka tenths
+	ldr r1, [r0]     					  // load r1 to store on tenth's address
 	add r1, #1		 					  // Add value 1 to tenths variable
 	cmp r1, #10		 					  // Check if value has reached 10
 	bne Tenths							  // Branch to Tenths if not 10
@@ -69,15 +69,15 @@ SysTick_Handler:
 	mov r7, #1 << LED_PIN
 	str r7, [r6]
 
-	ldr r2, =seconds 					  //
-	ldr r3, [r2]	 					  //
-	add r3, #1		 					  //
-	cmp r3, #60		 					  //
-	bne Seconds							  //
-	ldr r3, =0		 					  //
+	ldr r2, =seconds 					  // load global seoncds var
+	ldr r3, [r2]	 					  // load to store on seconds' address
+	add r3, #1		 					  // add 1
+	cmp r3, #60		 					  // compare to 60, 60 seconds
+	bne Seconds							  // branch to Seconds if not equal
+	ldr r3, =0		 					  // reset seconds to 0 per minute 
 
-	ldr r4, =minutes 					  //
-	ldr r5, [r4]						  //
+	ldr r4, =minutes 					  // load global minutes var
+	ldr r5, [r4]						  // load to store on address
 	add r5, #1		 					  // add 1
 	str r5, [r4]     					  // No need to branch off or compare, not counting hours, I hope
 
