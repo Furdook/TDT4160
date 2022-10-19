@@ -9,23 +9,23 @@
 	
 Start:
 
-	ldr r0, =FREQUENCY / 10				  // clock frquency 14 000 000 devided to count tenth of seconds
+	ldr r0, =FREQUENCY / 10               // clock frquency 14 000 000 devided to count tenth of seconds
 	ldr r1, =SYSTICK_BASE + SYSTICK_LOAD  // load loc
-	str r0, [r1]						  // store frequency in load
+	str r0, [r1]                          // store frequency in load
 
-	mov r0, #0							  // 0
+	mov r0, #0                            // 0
 	ldr r1, =SYSTICK_BASE + SYSTICK_VAL	  // val loc
-	str r0, [r1]						  // store zero in val
+	str r0, [r1]                          // store zero in val
 
-	ldr r0, =0b110						  // clcksource + tickint, not enabling before button press
+	ldr r0, =0b110                        // clcksource + tickint, not enabling before button press
 	ldr r1, =SYSTICK_BASE + SYSTICK_CTRL  // ctrl loc
-	str r0, [r1]						  // store
+	str r0, [r1]                          // store
 
 	ldr r0, =GPIO_BASE + GPIO_EXTIPSELH	  // base loc
-	ldr r1, [r0]						  // mem address
-	and r1, 0b1111 << 4					  // left shift 4, and to loc
-	orr r1, 0b0001 << 4					  // left shift 4, or with prior
-	str r1, [r0]						  // store on base address
+	ldr r1, [r0]                          // mem address
+	and r1, 0b1111 << 4                   // left shift 4, and to loc
+	orr r1, 0b0001 << 4                   // left shift 4, or with prior
+	str r1, [r0]                          // store on base address
 
 	ldr r0, =GPIO_BASE+GPIO_EXTIFALL	  // load address
 	ldr r1, [r0]						  // load base address on r1
