@@ -27,7 +27,7 @@ Start:
 	orr r1, 0b0001 << 4                   // left shift 4, or with prior
 	str r1, [r0]                          // store on base address
 
-	ldr r0, =GPIO_BASE+GPIO_EXTIFALL      // load address
+	ldr r0, =GPIO_BASE + GPIO_EXTIFALL      // load address
 	ldr r1, [r0]                          // load base address on r1
 	orr r1, 1 << BUTTON_PIN               // or 1 lsl by 9 with r1 on r1,
 	str r1, [r0]                          // store on base address
