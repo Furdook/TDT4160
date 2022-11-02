@@ -1,50 +1,50 @@
 #include "o3.h"
 
-struct gpio_port_map_t {  
-    volatile word CTRL;
-    volatile word MODEL;
-    volatile word MODEH;
-    volatile word DOUT;
-    volatile word DOUTSET;
-    volatile word DOUTCLR;
-    volatile word DOUTTGL;
-    volatile word DIN;
-    volatile word PINLOCKN;
+struct gpio_port_map_t {
+    word CTRL;
+    word MODEL;
+    word MODEH;
+    word DOUT;
+    word DOUTSET;
+    word DOUTCLR;
+    word DOUTTGL;
+    word DIN;
+    word PINLOCKN;
 };
 
-volatile struct gpio_map_t {  
+struct gpio_map_t {
     struct gpio_port_map_t ports[6];
-    volatile word unused_space[10];
-    volatile word EXTIPSELL;
-    volatile word EXTIPSELH;
-    volatile word EXTIRISE;
-    volatile word EXTIFALL;
-    volatile word IEN;
-    volatile word IF;
-    volatile word IFS;
-    volatile word IFC;
-    volatile word ROUTE;
-    volatile word INSENSE;
-    volatile word LOCK;
-    volatile word CTRL;
-    volatile word CMD;
-    volatile word EM4WUEN;
-    volatile word EM4WUPOL;
-    volatile word EM4WUCAUSE;
-} *GPIO = (struct gpio_map_t*)0x40006000; 
+    word unused_space[10];
+    word EXTIPSELL;
+    word EXTIPSELH;
+    word EXTIRISE;
+    word EXTIFALL;
+    word IEN;
+    word IF;
+    word IFS;
+    word IFC;
+    word ROUTE;
+    word INSENSE;
+    word LOCK;
+    word CTRL;
+    word CMD;
+    word EM4WUEN;
+    word EM4WUPOL;
+    word EM4WUCAUSE;
+} *GPIO = (struct gpio_map_t*)0x40006000;
 
-volatile struct systick_t {
+struct systick_t {
     word CTRL;
     word LOAD;
     word VAL;
     word CALIB;
-} *SYSTICK = (struct systick_t*)0xE000E010;  
+} *SYSTICK = (struct systick_t*)0xE000E010;
 
 static int state = 0;
 static int time = 0;
 static char str[8] = "0000000\0";
 
-void int_to_string(char *timestamp, unsigned int offset, int i) {  
+void int_to_string(char *timestamp, unsigned int offset, int i) {
     if (i > 99) {
         timestamp[offset]   = '9';
         timestamp[offset + 1] = '9';
@@ -63,7 +63,7 @@ void int_to_string(char *timestamp, unsigned int offset, int i) {
     }
 }
 
-void time_to_string(char *timestamp, int h, int m, int s) {  
+void time_to_string(char *timestamp, int h, int m, int s) {
     timestamp[0] = '0';
     timestamp[1] = '0';
     timestamp[2] = '0';
@@ -112,7 +112,7 @@ void SysTick_Handler() {
     }
 }
 
-void setFlag(volatile word *w, int i, word flag) {
+void setFlag(word *w, int i, word flag) {
     *w &= ~(0b1111 << (i * 4));
     *w |= flag << (i * 4);
 }
@@ -142,7 +142,7 @@ int main() {
 /*
 SYSTICK_BASE 0xE000E010
 GPIO_BASE 0x40006000
-FREQUENCY 14000000 
+FREQUENCY 14000000
 
 LED_PIN 2
 PB0_PIN 9
