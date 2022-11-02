@@ -31,14 +31,14 @@ struct gpio_map_t {
     word EM4WUEN;
     word EM4WUPOL;
     word EM4WUCAUSE;
-} *GPIO = (struct gpio_map_t*)0x40006000;
+} *GPIO = (struct gpio_map_t*)0x40006000;   // GPIO_BASE address = 0x40006000
 
 struct systick_t {
     word CTRL;
     word LOAD;
     word VAL;
     word CALIB;
-} *SYSTICK = (struct systick_t*)0xE000E010;
+} *SYSTICK = (struct systick_t*)0xE000E010; // SYSTICK_BASE address = 0xE000E010
 
 static int state = 0;
 static int time = 0;
@@ -92,11 +92,11 @@ void GPIO_EVEN_IRQHandler() {
     state++;
     if (state == 3) {
         SYSTICK->VAL = SYSTICK->LOAD;
-        SYSTICK->CTRL |= 0b001;                 // start clock
+        SYSTICK->CTRL = 0b111;                 // start clock, enable bit set to 1
     }
     if (state == 4) {
         state = 0;
-        GPIO->ports[4].DOUTCLR = 1 << 2;
+        GPIO->ports[4].DOUTCLR = 1 << 2;        // clear LED_PIN to turn off LED
     }
     GPIO->IFC = 1 << 10;                        // clear interupt flag on PB1: 10
 }
@@ -105,7 +105,7 @@ void SysTick_Handler() {
     if (state == 3) {                           // if set to state 3 starts counting down
         if (time <= 0) {
             state = 4;                          // alarm state
-            SYSTICK->CTRL &= ~(0b001);          // bitwise not &= call on msk, to stop clock
+            SYSTICK->CTRL = 0b110;              // to stop clock, enable bit set to 0
             GPIO->ports[4].DOUTSET = 1 << 2;    // left shift by LED_PIN
         }
         time--;
@@ -130,12 +130,12 @@ int main() {
     GPIO->IEN |= 1 << 9;                        // left shift by PB0
     GPIO->IEN |= 1 << 10;                       // left shift by PB1
 
-    SYSTICK->LOAD = 14000000;
-    SYSTICK->CTRL = 0b100 | 0b010;
+    SYSTICK->LOAD = 14000000;                   // frequency
+    SYSTICK->CTRL = 0b110;                      // setup for timer, 0b110, 0b111 to turn on
 
-    while (1) {
+    while (1) {                                 // format time int to readable timer
         time_to_string(str, time / 3600, (time / 60) % 60, time % 60);
-        lcd_write(str);
+        lcd_write(str);                         // update screen contiunously 
     }
     return 0;
 }
@@ -156,9 +156,9 @@ GPIO_MODE_INPUT  0b0001
 GPIO_MODE_OUTPUT 0b0100
 
 GPIO_PORT_A 0
-GPIO_PORT_B 1
+GPIO_PORT_B 1 PB0_PORT & PB1_PORT
 GPIO_PORT_C 2
 GPIO_PORT_D 3
-GPIO_PORT_E 4
+GPIO_PORT_E 4 LED_PORT
 GPIO_PORT_F 5
 */
