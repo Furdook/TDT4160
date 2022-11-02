@@ -1,6 +1,6 @@
 #include "o3.h"
 
-struct gpio_port_map_t {  // from compendium
+struct gpio_port_map_t {  
     volatile word CTRL;
     volatile word MODEL;
     volatile word MODEH;
@@ -12,7 +12,7 @@ struct gpio_port_map_t {  // from compendium
     volatile word PINLOCKN;
 };
 
-volatile struct gpio_map_t {  // from compendium
+volatile struct gpio_map_t {  
     struct gpio_port_map_t ports[6];
     volatile word unused_space[10];
     volatile word EXTIPSELL;
@@ -31,20 +31,20 @@ volatile struct gpio_map_t {  // from compendium
     volatile word EM4WUEN;
     volatile word EM4WUPOL;
     volatile word EM4WUCAUSE;
-} *GPIO = (struct gpio_map_t*)0x40006000;  // GPIO_BASE pointer
+} *GPIO = (struct gpio_map_t*)0x40006000; 
 
 volatile struct systick_t {
     word CTRL;
     word LOAD;
     word VAL;
     word CALIB;
-} *SYSTICK = (struct systick_t*)0xE000E010;  // SYSTICK_BASE pointer
+} *SYSTICK = (struct systick_t*)0xE000E010;  
 
 static int state = 0;
 static int time = 0;
 static char str[8] = "0000000\0";
 
-void int_to_string(char *timestamp, unsigned int offset, int i) {  // premade function
+void int_to_string(char *timestamp, unsigned int offset, int i) {  
     if (i > 99) {
         timestamp[offset]   = '9';
         timestamp[offset + 1] = '9';
@@ -63,7 +63,7 @@ void int_to_string(char *timestamp, unsigned int offset, int i) {  // premade fu
     }
 }
 
-void time_to_string(char *timestamp, int h, int m, int s) {  // premade function
+void time_to_string(char *timestamp, int h, int m, int s) {  
     timestamp[0] = '0';
     timestamp[1] = '0';
     timestamp[2] = '0';
@@ -85,28 +85,28 @@ void GPIO_ODD_IRQHandler() {
     if (state == 2)
         time += 3600;
 
-    GPIO->IFC = 1 << 9;  // clear interupt flag
+    GPIO->IFC = 1 << 9;                         // clear interupt flag
 }
 
 void GPIO_EVEN_IRQHandler() {
     state++;
     if (state == 3) {
         SYSTICK->VAL = SYSTICK->LOAD;
-        SYSTICK->CTRL |= 0b001;  // start clock
+        SYSTICK->CTRL |= 0b001;                 // start clock
     }
     if (state == 4) {
         state = 0;
         GPIO->ports[4].DOUTCLR = 1 << 2;
     }
-    GPIO->IFC = 1 << 10;  // clear interupt flag on PB1: 10
+    GPIO->IFC = 1 << 10;                        // clear interupt flag on PB1: 10
 }
 
 void SysTick_Handler() {
-    if (state == 3) {     // if set to state 3 starts counting down
+    if (state == 3) {                           // if set to state 3 starts counting down
         if (time <= 0) {
-            state = 4;    // alarm state
-            SYSTICK->CTRL &= ~(0b001);  // bitwise not &= call on msk, to stop clock
-            GPIO->ports[4].DOUTSET = 1 << 2; // left shift by LED_PIN
+            state = 4;                          // alarm state
+            SYSTICK->CTRL &= ~(0b001);          // bitwise not &= call on msk, to stop clock
+            GPIO->ports[4].DOUTSET = 1 << 2;    // left shift by LED_PIN
         }
         time--;
     }
@@ -119,16 +119,16 @@ void setFlag(volatile word *w, int i, word flag) {
 
 int main() {
     init();
-    setFlag(&GPIO->ports[4].MODEL, 2, 0b0100);    // LED_PIN: 2, port 4 (E)
-    setFlag(&GPIO->ports[1].MODEH, 1, 0b0001);    // PB0 - 8: 9-8, port 4 (B)
-    setFlag(&GPIO->ports[1].MODEH, 2, 0b0001);    // PB1 - 8: 10-8
-    setFlag(&GPIO->EXTIPSELH, 1, 0b0001);         // PB0 - 8
-    setFlag(&GPIO->EXTIPSELH, 2, 0b0001);         // PB1 - 8
+    setFlag(&GPIO->ports[4].MODEL, 2, 0b0100);  // LED_PIN: 2, port 4 (E)
+    setFlag(&GPIO->ports[1].MODEH, 1, 0b0001);  // PB0 - 8: 9-8, port 4 (B)
+    setFlag(&GPIO->ports[1].MODEH, 2, 0b0001);  // PB1 - 8: 10-8
+    setFlag(&GPIO->EXTIPSELH, 1, 0b0001);       // PB0 - 8
+    setFlag(&GPIO->EXTIPSELH, 2, 0b0001);       // PB1 - 8
 
-    GPIO->EXTIFALL |= 1 << 9;   // left shift by PB0
-    GPIO->EXTIFALL |= 1 << 10;  // left shift by PB1
-    GPIO->IEN |= 1 << 9;        // left shift by PB0
-    GPIO->IEN |= 1 << 10;       // left shift by PB1
+    GPIO->EXTIFALL |= 1 << 9;                   // left shift by PB0
+    GPIO->EXTIFALL |= 1 << 10;                  // left shift by PB1
+    GPIO->IEN |= 1 << 9;                        // left shift by PB0
+    GPIO->IEN |= 1 << 10;                       // left shift by PB1
 
     SYSTICK->LOAD = 14000000;
     SYSTICK->CTRL = 0b100 | 0b010;
